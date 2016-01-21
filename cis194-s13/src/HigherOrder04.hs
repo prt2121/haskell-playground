@@ -22,3 +22,25 @@ fun2' :: Integer -> Integer
 fun2' = sum . filter even . takeWhile (1 /=) . iterate f
             where f x | even x    = x `div` 2
                       | otherwise = 3 * x + 1
+
+data Tree a = Leaf
+    | Node Integer (Tree a) a (Tree a)
+    deriving (Show, Eq)
+
+-- generate a balanced binary tree
+foldTree :: [a] -> Tree a
+foldTree = foldr insert Leaf
+            where
+                insert x Leaf = Node 0 (Leaf) x (Leaf)
+                insert x (Node n l v r)
+                    | hl < hr   = Node n (insert x l) v r
+                    | hl > hr   = Node n l v t
+                    | otherwise = Node (h+1) l v t
+                    where   hl = treeHeight l
+                            hr = treeHeight r
+                            t  = insert x r
+                            h  = treeHeight t
+
+treeHeight :: Tree a -> Integer
+treeHeight Leaf = -1
+treeHeight (Node depth _ _ _) = depth
