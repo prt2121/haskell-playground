@@ -44,3 +44,14 @@ foldTree = foldr insert Leaf
 treeHeight :: Tree a -> Integer
 treeHeight Leaf = -1
 treeHeight (Node depth _ _ _) = depth
+
+-- Exercise 3: More folds!
+xor :: [Bool] -> Bool
+xor = odd . (foldr count 0)
+        where
+            count :: Bool -> Int -> Int
+            count b acc = if b then acc + 1 else acc
+
+-- Implement map as a fold.
+map' :: (a -> b) -> [a] -> [b]
+map' f = foldr (\x acc -> (f x) : acc) []
