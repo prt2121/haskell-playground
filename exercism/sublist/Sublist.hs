@@ -23,15 +23,11 @@ sublist' [x] [y]             = x == y
 sublist' l1@(x:_) l2@(y:ys) = if length l1 > length l2
                                   then False
                                   else if x == y
-                                       then if (takeEqual l1 l2) == l1 then True else sublist' l1 ys
+                                       then (takeEqual l1 l2) == l1 || sublist' l1 ys
                                        else sublist' l1 ys
 
 superList :: (Eq a) => [a] -> [a] -> Bool
-superList xs ys = sublist' ys xs
-
-dropPrefix :: (Eq a) => [a] -> [a] -> [a]
-dropPrefix xs (y:_) = dropWhile (/= y) xs
-dropPrefix _ [] = []
+superList = flip sublist'
 
 takeEqual :: (Eq a) => [a] -> [a] -> [a]
 takeEqual [] _ = []
