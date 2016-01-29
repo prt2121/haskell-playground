@@ -5,16 +5,10 @@ data Sublist = Equal | Sublist | Superlist | Unequal deriving (Eq, Show)
 
 sublist :: (Eq a) => [a] -> [a] -> Sublist
 sublist xs ys
-  | equal xs ys     = Equal
+  | xs == ys        = Equal
   | sublist' xs ys  = Sublist
   | superList xs ys = Superlist
   | otherwise       = Unequal
-
-equal :: (Eq a) => [a] -> [a] -> Bool
-equal xs ys = length xs == length ys && and (zipWith (==) xs ys)
-
-unequal :: (Eq a) => [a] -> [a] -> Bool
-unequal = (not .) . equal
 
 sublist' :: (Eq a) => [a] -> [a] -> Bool
 sublist' [] _                = True
