@@ -15,6 +15,20 @@ eval (Mul e1 e2)  = eval e1 * eval e2
 evalStr :: String -> Maybe Integer
 evalStr = (eval <$>) . (parseExp Lit Add Mul)
 
+-- Exercise 3
+class Expr a where
+  lit :: Integer -> a
+  add :: a -> a -> a
+  mul :: a -> a -> a
+
+instance Expr ExprT where
+  lit = ExprT.Lit
+  add = ExprT.Add
+  mul = ExprT.Mul
+
+reify :: ExprT -> ExprT
+reify = id
+
 main :: IO ()
 main = do
   putStrLn "hello world"
