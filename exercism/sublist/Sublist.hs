@@ -13,7 +13,6 @@ sublist xs ys
 sublist' :: (Eq a) => [a] -> [a] -> Bool
 sublist' [] _                = True
 sublist' _  []               = False
-sublist' [x] [y]             = x == y
 sublist' l1@(x:_) l2@(y:ys) = if length l1 > length l2
                                   then False
                                   else if x == y
