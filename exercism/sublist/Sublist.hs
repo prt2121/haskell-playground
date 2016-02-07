@@ -16,13 +16,13 @@ sublist' _  []               = False
 sublist' l1@(x:_) l2@(y:ys) = if length l1 > length l2
                                   then False
                                   else if x == y
-                                       then (takeEqual l1 l2) == l1 || sublist' l1 ys
+                                       then (subEqual l1 l2) || sublist' l1 ys
                                        else sublist' l1 ys
 
 superList :: (Eq a) => [a] -> [a] -> Bool
 superList = flip sublist'
 
-takeEqual :: (Eq a) => [a] -> [a] -> [a]
-takeEqual [] _ = []
-takeEqual _ [] = []
-takeEqual (x:xs) (y:ys) = if x == y then x : (takeEqual xs ys) else []
+subEqual :: (Eq a) => [a] -> [a] -> Bool
+subEqual [] _ = True
+subEqual _ [] = False
+subEqual (x:xs) (y:ys) = if x == y then (subEqual xs ys) else False
