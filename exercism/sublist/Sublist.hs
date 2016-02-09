@@ -13,13 +13,13 @@ sublist xs ys
 sublist' :: (Eq a) => [a] -> [a] -> Bool
 sublist' [] _                = True
 sublist' _  []               = False
-sublist' l1@(x:_) l2@(y:ys)  =
-  length l1 <= length l2 && ((x == y && (subEqual l1 l2 || sublist' l1 ys)) || (x /= y && sublist' l1 ys))
+sublist' l1 l2@(_:ys)  =
+  length l1 <= length l2 && (isPrefixOf l1 l2 || sublist' l1 ys)
 
 superList :: (Eq a) => [a] -> [a] -> Bool
 superList = flip sublist'
 
-subEqual :: (Eq a) => [a] -> [a] -> Bool
-subEqual [] _ = True
-subEqual _ [] = False
-subEqual (x:xs) (y:ys) = x == y && subEqual xs ys
+isPrefixOf :: (Eq a) => [a] -> [a] -> Bool
+isPrefixOf [] _ = True
+isPrefixOf _ [] = False
+isPrefixOf (x:xs) (y:ys) = x == y && isPrefixOf xs ys
