@@ -23,8 +23,14 @@ isPlane = not . isCar
 areCars :: [Vehicle] -> [Bool]
 areCars = map isCar
 
+getManu :: Vehicle -> [Manufacturer]
+getManu (Car m _) = [m]
+getManu _         = []
+
 main :: IO ()
 main = do
   putStrLn $ show $ isCar $ Car Honda $ Price 100
   putStrLn $ show $ isPlane $ Car Honda $ Price 100
   putStrLn $ show $ areCars $ [Car Honda $ Price 100, Plane United]
+  putStrLn $ show $ getManu $ Car Honda $ Price 100
+  putStrLn $ show $ getManu $ Plane United
