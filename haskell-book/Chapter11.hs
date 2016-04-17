@@ -1,6 +1,8 @@
 -- CHAPTER 11. ALGEBRAIC DATATYPES
 module Chapter11 where
 
+import Control.Applicative (liftA2)
+
 data Price =
   Price Integer deriving (Eq, Show)
 
@@ -36,6 +38,41 @@ getManu _         = []
 size :: Vehicle' -> Maybe Integer
 size (Plane' _ (Size s)) = Just s
 size _                   = Nothing
+
+data OS =
+  GnuPlusLinux
+  | OpenBSDPlusNevermindJustBSDStill
+  | Mac
+  | Windows
+  deriving (Eq, Show)
+
+data Lang =
+  Haskell
+  | Agda
+  | Idris
+  | PureScript
+  deriving (Eq, Show)
+
+data Programmer =
+  Programmer { os :: OS, lang :: Lang } deriving (Eq, Show)
+
+allOSs :: [OS]
+allOSs = [ GnuPlusLinux, OpenBSDPlusNevermindJustBSDStill, Mac, Windows ]
+
+allLangs :: [Lang]
+allLangs = [Haskell, Agda, Idris, PureScript]
+
+-- p. 415
+-- Write a function that generates all possible values of Programmer.
+allProgrammers :: [Programmer]
+allProgrammers = [ Programmer { os = o, lang = l} | o <- allOSs, l <- allLangs ]
+
+allProgrammers' :: [Programmer]
+allProgrammers' = (\o l -> Programmer { os = o, lang = l}) <$> allOSs <*> allLangs
+
+allProgrammers'' :: [Programmer]
+allProgrammers'' = liftA2 (\o l -> Programmer { os = o, lang = l}) allOSs allLangs
+-- liftA2 Lift a binary function to actions.
 
 main :: IO ()
 main = do
