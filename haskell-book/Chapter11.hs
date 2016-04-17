@@ -2,6 +2,8 @@
 module Chapter11 where
 
 import Control.Applicative (liftA2)
+import Control.Monad (ap)
+import Data.Char (toUpper)
 
 data Price =
   Price Integer deriving (Eq, Show)
@@ -73,6 +75,19 @@ allProgrammers' = (\o l -> Programmer { os = o, lang = l}) <$> allOSs <*> allLan
 allProgrammers'' :: [Programmer]
 allProgrammers'' = liftA2 (\o l -> Programmer { os = o, lang = l}) allOSs allLangs
 -- liftA2 Lift a binary function to actions.
+
+-- Language exercises
+capitalizeWord :: String -> String
+capitalizeWord ls = (toUpper . head) ls : tail ls
+
+capitalizeWord' :: String -> String
+capitalizeWord' = ap ((:) . toUpper . head) tail
+
+-- ap :: Monad m => m (a -> b) -> m a -> m b
+-- In many situations, the liftM operations can be replaced by uses of ap, which promotes function application.
+-- > return f `ap` x1 `ap` ... `ap` xn
+-- is equivalent to
+-- > liftMn f x1 x2 ... xn
 
 main :: IO ()
 main = do
