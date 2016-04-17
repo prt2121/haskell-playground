@@ -4,6 +4,7 @@ module Chapter11 where
 import Control.Applicative (liftA2)
 import Control.Monad (ap)
 import Data.Char (toUpper)
+import Data.Foldable (toList)
 
 data Price =
   Price Integer deriving (Eq, Show)
@@ -88,6 +89,18 @@ capitalizeWord' = ap ((:) . toUpper . head) tail
 -- > return f `ap` x1 `ap` ... `ap` xn
 -- is equivalent to
 -- > liftMn f x1 x2 ... xn
+
+-- very bad implementation but i'm lazy now
+capitalizeParagraph :: String -> String
+capitalizeParagraph s = init $ flatMap ((++ " ") . capitalizeWord) (sentence s)
+
+sentence :: String -> [String]
+sentence s =  case dropWhile (== '.') s of
+                      "" -> []
+                      s' -> (w ++ ".") : sentence (drop 2 s'')
+                            where (w, s'') = break (== '.') s'
+
+flatMap f = concatMap (toList . f)
 
 main :: IO ()
 main = do
