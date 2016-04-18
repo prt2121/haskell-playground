@@ -6,6 +6,25 @@ import Control.Monad (ap)
 import Data.Char (toUpper)
 import Data.Foldable (toList)
 
+-- Hutton’s Razor
+data Expr
+  = Lit Integer
+  | Add Expr Expr
+
+eval :: Expr -> Integer
+eval (Lit z)     = z
+eval (Add e1 e2) = eval e1 + eval e2
+
+printExpr :: Expr -> String
+printExpr (Lit z)     = show z
+printExpr (Add e1 e2) = printExpr e1 ++ " + " ++ printExpr e2
+
+-- *Chapter11> let a1 = Add (Lit 9001) (Lit 1)
+-- *Chapter11> let a2 = Add a1 (Lit 20001)
+-- *Chapter11> let a3 = Add (Lit 1) a2
+-- *Chapter11> printExpr a3
+-- "1 + 9001 + 1 + 20001"
+
 data Price =
   Price Integer deriving (Eq, Show)
 
