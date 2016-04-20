@@ -1,4 +1,8 @@
 module Main where
 
+import Hello (sayHello)
+
 main :: IO()
-main = putStrLn "CHAP 13 BUILDING PROJECTS"
+main = do
+  name <- getLine
+  sayHello name
