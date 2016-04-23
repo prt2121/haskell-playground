@@ -1,10 +1,14 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 import Reflex.Dom
 
-main :: IO ()
-main = mainWidget $ do
+workshop :: MonadWidget t m => m ()
+workshop = do
   text "Welcome to the workshop!"
   t <- textInput def
-  let dynString = _textInput_value t
-  dynText dynString
+  let apiKey = _textInput_value t
+  b <- button "Send Request"
+  let apiKeyEvent = tagDyn apiKey b
   return ()
+
+main :: IO()
+main = mainWidget workshop
