@@ -9,7 +9,8 @@ workshop = do
   b :: Event t () <- button "Send Request"
   let apiKeyButtonEvent :: Event t String = tagDyn apiKey b
       apiKeyEnterEvent :: Event t String = tagDyn apiKey $ textInputGetEnter t
-  submittedApiKey :: Dynamic t String <- holdDyn "NO STRING SUBMITTED" apiKeyButtonEvent -- holdDyn :: a -> Event a -> m (Dynamic a)
+      apiKeyEvent :: Event t String = leftmost [apiKeyButtonEvent, apiKeyEnterEvent]
+  submittedApiKey :: Dynamic t String <- holdDyn "NO STRING SUBMITTED" apiKeyEvent -- holdDyn :: a -> Event a -> m (Dynamic a)
   dynText submittedApiKey
   return ()
 
