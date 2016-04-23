@@ -1,4 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
+-- This is needed so that we can have constraints in type synonyms.
+{-# LANGUAGE RankNTypes #-}
 
 module Main where
 
