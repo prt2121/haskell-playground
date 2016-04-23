@@ -1,8 +1,24 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE DeriveGeneric #-}
+
 import Reflex.Dom
 import qualified Data.Text as T
 import Data.Monoid
 import Data.Maybe
+import GHC.Generics
+import Data.Aeson
+
+data NasaPicture = NasaPicture { copyright :: String
+                               , date :: String
+                               , explanation :: String
+                               , hdurl :: String
+                               , media_type :: String
+                               , service_version :: String
+                               , title :: String
+                               , url :: String
+                               } deriving (Show, Generic)
+
+instance FromJSON NasaPicture
 
 workshop :: forall t m. MonadWidget t m => m ()
 workshop = do
@@ -22,7 +38,11 @@ workshop = do
       -- rspString :: Event t String = fmap (\rt -> T.unpack $ fromMaybe T.empty rt) rspText
       rspString :: Event t String = fmapMaybe (\mt -> fmap T.unpack mt) rspText
   rspDyn <- holdDyn "No Res" rspString
-  dynText rspDyn
+  -- dynText rspDyn
+  let decoded :: Event t (Maybe NasaPicture) = fmap decodeXhrResponse rsp
+  dynPic <- holdDyn Nothing decoded
+  dynPicString <- mapDyn show dynPic
+  dynText dynPicString
   return ()
 
 apiKeyToXhrRequest :: String -> XhrRequest
