@@ -7,6 +7,8 @@ import Data.Monoid
 import Data.Maybe
 import GHC.Generics
 import Data.Aeson
+import qualified Data.Map as Map
+import Data.Map (Map)
 
 data NasaPicture = NasaPicture { copyright :: String
                                , date :: String
@@ -43,6 +45,11 @@ workshop = do
   dynPic <- holdDyn Nothing decoded
   dynPicString <- mapDyn show dynPic
   dynText dynPicString
+  imgAttrs <- forDyn dynPic $ \np ->
+    case np of
+      Nothing -> Map.empty
+      Just pic -> "src" =: url pic -- Map.singleton "src" (url pic)
+  elDynAttr "img" imgAttrs $ return ()
   return ()
 
 apiKeyToXhrRequest :: String -> XhrRequest
