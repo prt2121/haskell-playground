@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
--- https://github.com/kqr/gists/blob/master/articles/gentle-introduction-monad-transformers.md
+-- study monad transformers
+-- modified from https://github.com/kqr/gists/blob/master/articles/gentle-introduction-monad-transformers.md
 module Main where
 
 import           Control.Applicative
@@ -67,6 +68,20 @@ userLogin = do
 
 throwE :: e -> EitherIO e a
 throwE e = liftEither $ Left e
+
+catchE :: EitherIO e a -> (e -> EitherIO e a) -> EitherIO e a
+catchE t c =
+  EitherIO $ do
+    result <- runEitherIO t
+    case result of
+      Left failure -> runEitherIO (c failure)
+      success      -> return success
+
+wrongPasswordHandler :: LoginError -> EitherIO LoginError Text
+wrongPasswordHandler WrongPassword = do
+  liftIO (T.putStrLn "Wrong password, one more chance.")
+  userLogin
+wrongPasswordHandler e = throwE e
 
 main :: IO ()
 main = do
