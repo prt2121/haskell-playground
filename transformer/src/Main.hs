@@ -65,11 +65,16 @@ users = Map.fromList [("test.com", "test1234"), ("localhost", "password")]
 userLogin :: EitherIO LoginError Text
 userLogin = do
   d <- getDomainIO
-  p <- maybe (liftEither $ Left NoSuchUser) return $ Map.lookup d users
+  p <- maybe
+        (liftEither $ Left NoSuchUser)
+        return $ Map.lookup d users
   password <- liftIO (T.putStrLn "Enter your password:" >> T.getLine)
   if p == password
      then return d
-     else liftEither (Left WrongPassword)
+     else throwE WrongPassword
+
+throwE :: e -> EitherIO e a
+throwE e = liftEither $ Left e
 
 main :: IO ()
 main = do
