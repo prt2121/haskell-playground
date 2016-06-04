@@ -16,9 +16,6 @@ data EitherIO e a = EitherIO {
                       runEitherIO :: IO (Either e a)
                     }
 
--- runEitherIO :: EitherIO e a -> IO (Either e a)
--- fmap :: (a -> b) -> f a -> f b
-
 instance Functor (EitherIO e) where
   fmap f = EitherIO . fmap (fmap f) . runEitherIO
 
@@ -41,11 +38,6 @@ printResult domain =
   case domain of
     Right text        -> T.putStrLn (append "Domain: " text)
     Left InvalidEmail -> T.putStrLn "ERROR: Invalid domain"
-
--- *Main> getDomainIO
--- Enter email address:
--- b@gmail.com
--- Right "gmail.com"
 
 liftEither :: Either e a -> EitherIO e a
 liftEither x = EitherIO (return x)
@@ -79,6 +71,14 @@ throwE e = liftEither $ Left e
 main :: IO ()
 main = do
   T.putStrLn "hello world"
+
+-- *Main> getDomainIO
+-- Enter email address:
+-- b@gmail.com
+-- Right "gmail.com"
+
+-- runEitherIO :: EitherIO e a -> IO (Either e a)
+-- fmap :: (a -> b) -> f a -> f b
 
 -- maybe :: b -> (a -> b) -> Maybe a -> b
 -- *Main> :set -XOverloadedStrings
