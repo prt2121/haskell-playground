@@ -2,15 +2,33 @@
 -- https://github.com/kqr/gists/blob/master/articles/gentle-introduction-monad-transformers.md
 module Main where
 
-import Data.Text
-import qualified Data.Text.IO as T
-import Data.Map as Map
-import Control.Applicative
+import           Control.Applicative
+import           Data.Map            as Map
+import           Data.Text
+import qualified Data.Text.IO        as T
 
 data LoginError = InvalidEmail
                 | NoSuchUser
                 | WrongPassword
   deriving Show
+
+data EitherIO e a = EitherIO {
+                      runEitherIO :: IO (Either e a)
+                    }
+
+-- runEitherIO :: EitherIO e a -> IO (Either e a)
+-- fmap :: (a -> b) -> f a -> f b
+
+instance Functor (EitherIO e) where
+  fmap f = EitherIO . fmap (fmap f) . runEitherIO
+
+instance Applicative (EitherIO e) where
+  pure    = EitherIO . return . Right
+  f <*> x = EitherIO $ liftA2 (<*>) (runEitherIO f) (runEitherIO x)
+
+instance Monad (EitherIO e) where
+  return  = pure
+  x >>= f = EitherIO $ runEitherIO x >>= either (return . Left) (runEitherIO . f)
 
 getDomain :: Text -> Either LoginError Text
 getDomain email =
@@ -29,34 +47,35 @@ printResult domain =
 -- b@gmail.com
 -- Right "gmail.com"
 
-getDomainIO :: IO (Either LoginError Text)
+liftEither :: Either e a -> EitherIO e a
+liftEither x = EitherIO (return x)
+
+liftIO :: IO a -> EitherIO e a
+liftIO x = EitherIO (fmap Right x)
+
+getDomainIO :: EitherIO LoginError Text
 getDomainIO = do
-  T.putStrLn "Enter email address:"
-  email <- T.getLine
-  return (getDomain email)
+  liftIO (T.putStrLn "Enter email address:")
+  input <- liftIO T.getLine
+  liftEither (getDomain input)
 
 users :: Map Text Text
 users = Map.fromList [("test.com", "test1234"), ("localhost", "password")]
 
-userLogin :: IO (Either LoginError Text)
+userLogin :: EitherIO LoginError Text
 userLogin = do
   d <- getDomainIO
-  case d of
-    Right domain ->
-      case Map.lookup domain users of
-        Just p -> do
-          T.putStrLn "Enter password:"
-          password <- T.getLine
-          if p == password
-             then return d
-             else return (Left WrongPassword)
-        Nothing -> return (Left NoSuchUser)
-    left -> return left
+  p <- maybe (liftEither $ Left NoSuchUser) return $ Map.lookup d users
+  password <- liftIO (T.putStrLn "Enter your password:" >> T.getLine)
+  if p == password
+     then return d
+     else liftEither (Left WrongPassword)
 
 main :: IO ()
 main = do
   T.putStrLn "hello world"
 
+-- maybe :: b -> (a -> b) -> Maybe a -> b
 -- *Main> :set -XOverloadedStrings
 -- *Main> getDomain "test@example.com"
 -- Right "example.com"
