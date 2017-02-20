@@ -80,14 +80,18 @@ instance Functor (Moi s) where
             where
               mapFst f (x, y) = (f x, y)
 
--- instance Applicative (Moi s) where
---   -- pure :: a -> Moi s a
---   pure a = \s -> (a, s)
+instance Applicative (Moi s) where
+  -- pure :: a -> Moi s a
+  pure a = Moi $ \s -> (a, s)
 
---   (<*>) :: Moi s (a -> b)
---         -> Moi s a -- \s -> (a, s)
---         -> Moi s b -- \s -> (b, s)
---   (<*>) sab sa sb = 
+  -- (<*>) :: Moi s (a -> b)
+  --       -> Moi s a
+        -- -> Moi s b
+  (<*>) (Moi ab) (Moi a) =
+    Moi $ \sa
+    -> let (x, sb) = ab sa
+           (y, s) = a sb
+       in (x y, s)
 
 main :: IO ()
 main = do
